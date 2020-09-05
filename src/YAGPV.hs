@@ -3,6 +3,10 @@
 module YAGPV where
 
 import Data.String (IsString(..))
+
+--alga
+import Algebra.Graph (empty, vertex, connect, Graph)
+import Algebra.Graph.Export.Dot (Attribute(..), Style(..), export)
 -- containers
 import Data.Tree (Tree(..), drawTree, Forest, foldTree, unfoldTree)
 -- ghc-prof
@@ -14,6 +18,8 @@ import qualified Data.Text as T (Text, splitOn, pack, unpack)
 import qualified Data.Text.Lazy as TL (Text, fromStrict, toStrict)
 import qualified Data.Text.Lazy.IO as TL (readFile)
 
+buildg :: Tree a -> Graph a
+buildg = foldTree $ \x gs -> foldl (\acc g -> connect (vertex x) g `connect` acc) empty gs  -- foldl connect (vertex x) gs
 
 data CCSummary = CCS {
     ccsName :: T.Text
@@ -28,10 +34,12 @@ instance Show CCSummary where
 
 -- prune q = foldTree (\l xs -> if q l then xs else Node l xs)
 
--- prune q = foldTree $ \ l xs ->
+-- prune q f = foldTree $ \ l xs ->
 --   case q l of
 --     True -> Node l xs
---     False -> Node l xs
+--     False -> prune q f $ f xs
+
+
 
 ccSummary :: P.CostCentre -> CCSummary
 ccSummary s = CCS name' mdl nents iht

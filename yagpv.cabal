@@ -33,6 +33,7 @@ executable yagpv
   main-is:             Main.hs
   build-depends:       base
                      , yagpv
+                     , optparse-applicative
 
 -- test-suite spec
 --   default-language:    Haskell2010
