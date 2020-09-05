@@ -7,4 +7,4 @@ import YAGPV (draw)
 -- main = putStrLn "hello!"
 
 main :: IO ()
-main = draw "../entity-recog/ml.prof"
+main = draw "dummy.prof"

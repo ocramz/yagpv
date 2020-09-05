@@ -1,5 +1,6 @@
 {-# language OverloadedStrings #-}
 {-# options_ghc -Wno-unused-imports #-}
+{-# options_ghc -Wno-unused-matches #-}
 module YAGPV where
 
 import Data.String (IsString(..))
@@ -20,6 +21,9 @@ import Data.Scientific (Scientific)
 import qualified Data.Text as T (Text, take, splitOn, pack, unpack)
 import qualified Data.Text.Lazy as TL (Text, fromStrict, toStrict)
 import qualified Data.Text.Lazy.IO as TL (readFile)
+
+
+
 
 -- | Build a graph from a tree by connecting at each level
 t2g :: Tree a -> Graph a
@@ -86,12 +90,13 @@ draw fp = do
   let fname = takeBaseName fp
   case P.decode tl of
     Left e -> error e
+    -- Right prof -> print $ P.profileCostCentreTree prof
     Right prof -> case P.costCentres prof of
-      -- Just tree -> putStrLn $ drawTree (show . ccSummary <$> tree)
-      Just tree -> do
-        let
-          tree' = ccSummary <$> tree
-          -- gr = t2g tree'
-          gr = t2gIf (\c -> T.take 3 (ccsName c) /= "CAF") tree'
-        putStrLn $ export (style fname) gr
+      Just tree -> putStrLn $ drawTree (show . ccSummary <$> tree)
+    --   Just tree -> do
+    --     let
+    --       tree' = ccSummary <$> tree
+    --       -- gr = t2g tree'
+    --       -- gr = t2gIf (\c -> T.take 3 (ccsName c) /= "CAF") tree'
+    --     putStrLn $ export (style fname) gr
       Nothing -> pure ()
