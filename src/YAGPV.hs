@@ -70,17 +70,19 @@ data CCSummary = CCS {
   , ccsInhTime :: Scientific
                      } deriving (Eq)
 instance Show CCSummary where
-  show (CCS i n m e t) = unwords [T.unpack n, T.unpack m, show e, show t, show i]
+  -- show (CCS i n m e t) = unwords [T.unpack n, T.unpack m, show e, show t, show i]
+  show (CCS _ n _ _ t) = unwords [T.unpack n, show t]
 instance Ord CCSummary where
   (CCS _ _ _ i1 _) <= (CCS _ _ _ i2 _) = i1 <= i2
 
 
 ccSummary :: P.CostCentre -> CCSummary
-ccSummary s = CCS i name' mdl nents iht
+ccSummary s = CCS i name mdl nents iht
   where
     i = P.costCentreNo s
     mdl = P.costCentreModule s
-    name' = last $ T.splitOn "." $ P.costCentreName s
+    name = P.costCentreName s
+    -- name' = last $ T.splitOn "." $ P.costCentreName s
     nents = P.costCentreEntries s
     iht = P.costCentreInhTime s
 
