@@ -23,6 +23,7 @@ library
                      , algebraic-graphs
                      , containers
                      , ghc-prof
+                     , scientific
                      , text
 
 executable yagpv

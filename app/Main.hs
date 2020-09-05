@@ -1,6 +1,10 @@
+{-# options_ghc -Wno-unused-imports #-}
 module Main where
 
-import YAGPV
+import YAGPV (draw)
+
+-- main :: IO ()
+-- main = putStrLn "hello!"
 
 main :: IO ()
-main = putStrLn "hello!"
+main = draw "../entity-recog/ml.prof"
