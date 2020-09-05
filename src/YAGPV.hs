@@ -17,14 +17,25 @@ import qualified GHC.Prof as P (Profile(..), decode, CostCentre(..), costCentres
 -- scientific
 import Data.Scientific (Scientific)
 -- text
-import qualified Data.Text as T (Text, splitOn, pack, unpack)
+import qualified Data.Text as T (Text, take, splitOn, pack, unpack)
 import qualified Data.Text.Lazy as TL (Text, fromStrict, toStrict)
 import qualified Data.Text.Lazy.IO as TL (readFile)
 
 -- | Build a graph from a tree by connecting at each level
-buildg :: Tree a -> Graph a
-buildg = foldTree $ \x gs ->
+t2g :: Tree a -> Graph a
+t2g = foldTree $ \x gs ->
   foldl (\acc g -> connect (vertex x) g `connect` acc) empty gs
+
+-- | Build a graph from a tree by connecting at each level, if the current label satisfies a predicate
+t2gIf :: (a -> Bool) -> Tree a -> Graph a
+t2gIf q = foldTree $ \ x gs ->
+  let
+    insf acc g
+      | q x = connect (vertex x) g `connect` acc
+      | otherwise = acc
+  in foldl insf empty gs
+
+
 
 style :: [Char] -> Style CCSummary [Char]
 style name = Style name [] attrs vas eas vn vattrs eattrs
@@ -32,8 +43,8 @@ style name = Style name [] attrs vas eas vn vattrs eattrs
     attrs = []
     vas = ["shape" := "circle"]
     eas = mempty
-    vn x = "v" ++ show (ccsNo x)
-    vattrs x = []
+    vn x = "v" <> show (ccsNo x)
+    vattrs x = ["label" := T.unpack (ccsName x)]
     eattrs x y = []
 
 -- style = Style
@@ -80,6 +91,7 @@ draw fp = do
       Just tree -> do
         let
           tree' = ccSummary <$> tree
-          gr = buildg tree'
+          -- gr = t2g tree'
+          gr = t2gIf (\c -> T.take 3 (ccsName c) /= "CAF") tree'
         putStrLn $ export (style fname) gr
       Nothing -> pure ()
